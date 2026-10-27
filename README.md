@@ -34,20 +34,25 @@ O `platformio.ini` usa a board genérica `esp32-s3-devkitc-1`, com flash/PSRAM c
 
 ## Configuração
 
-Crie o ficheiro `.env` na raiz do projeto (já está no `.gitignore`, não o envie ao Git):
+Copie o modelo [.env.sample](.env.sample) para a raiz com o nome `.env` e preencha os valores (o `.env` já está no `.gitignore`, não o envie ao Git):
 
-```env
-WIFI_SSID=NomeDaSuaRede
-WIFI_PASS=SenhaDaRede
-NTP_SERVER=a.st1.ntp.br
-
-GEMINI_API_KEY=sua_chave_aqui
-GEMINI_MODEL=gemini-3.5-flash-lite
+```bash
+cp .env.sample .env
 ```
 
-O script [load_env.py](load_env.py) lê o `.env` antes da compilação e transforma cada linha numa macro C++ (`-DCHAVE="valor"`). Sem `.env`, a compilação usa valores padrão e o Wi-Fi não conecta.
+| Variável | Descrição | Padrão |
+|----------|-----------|--------|
+| `WIFI_SSID` / `WIFI_PASS` | Rede Wi-Fi 2.4 GHz (obrigatório) | - |
+| `GMT_OFFSET_SEC` | Fuso horário em segundos | `-10800` (UTC-3) |
+| `DAYLIGHT_OFFSET_SEC` | Horário de verão em segundos | `0` |
+| `NTP_SERVER1..3` | Servidores NTP | `a.st1.ntp.br`, `b.st1.ntp.br`, `pool.ntp.org` |
+| `NTP_SYNC_INTERVAL_MS` | Intervalo de ressincronização | `3600000` (1 h) |
+| `LATITUDE` / `LONGITUDE` / `CITY_NAME` | Local do tempo; vazio = detetar por IP | vazio |
+| `GEMINI_API_KEY` | Chave da API Gemini | - |
+| `GEMINI_MODEL` | Modelo de texto | `gemini-3.5-flash-lite` |
+| `GEMINI_TTS_MODEL` | Modelo de voz (TTS) | `gemini-3.1-flash-tts-preview` |
 
-Outras opções ficam no topo de [src/main.cpp](src/main.cpp): fuso horário (`GMT_OFFSET_SEC`), `LATITUDE`, `LONGITUDE`, `CITY_NAME` e `NTP_SYNC_INTERVAL_MS`.
+O script [load_env.py](load_env.py) lê o `.env` antes da compilação e transforma cada linha numa macro C++ (`-DCHAVE="valor"`). Variáveis omitidas usam os padrões de [src/main.cpp](src/main.cpp). Sem `.env`, o Wi-Fi não conecta.
 
 ## Build e upload
 
@@ -64,7 +69,7 @@ Na extensão do VS Code, use os botões **Build**, **Upload** e **Monitor** da b
 Passo a passo:
 
 1. Clone/abra a pasta do projeto.
-2. Crie o `.env` (ver acima).
+2. Copie `.env.sample` para `.env` e preencha (ver acima).
 3. Ligue a placa por USB-C.
 4. Execute `pio run -t upload`. Na primeira vez, o PlatformIO baixa a plataforma `espressif32` e as bibliotecas (`lvgl`, `SensorLib`, `ArduinoJson`).
 5. Abra o monitor serial para ver os logs.
@@ -79,6 +84,7 @@ Passo a passo:
 ## Estrutura
 
 ```
+.env.sample       Modelo de configuração (copiar para .env)
 platformio.ini     Configuração da board, flags e dependências
 default_16MB.csv   Tabela de partições (2 apps OTA de 6,25 MB + SPIFFS)
 load_env.py        Injeta o .env como macros de compilação
