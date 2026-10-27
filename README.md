@@ -34,10 +34,10 @@ O `platformio.ini` usa a board genérica `esp32-s3-devkitc-1`, com flash/PSRAM c
 
 ## Configuração
 
-Copie o modelo [.env.sample](.env.sample) para a raiz com o nome `.env` e preencha os valores (o `.env` já está no `.gitignore`, não o envie ao Git):
+Copie o modelo [contrib/.env.sample](contrib/.env.sample) para a raiz com o nome `.env` e preencha os valores (o `.env` já está no `.gitignore`, não o envie ao Git):
 
 ```bash
-cp .env.sample .env
+cp contrib/.env.sample .env
 ```
 
 | Variável | Descrição | Padrão |
@@ -50,7 +50,7 @@ cp .env.sample .env
 | `LATITUDE` / `LONGITUDE` / `CITY_NAME` | Local do tempo; vazio = detetar por IP | vazio |
 | `GEMINI_API_KEY` | Chave da API Gemini | - |
 | `GEMINI_MODEL` | Modelo de texto | `gemini-3.5-flash-lite` |
-| `GEMINI_TTS_MODEL` | Modelo de voz (TTS) | `gemini-3.1-flash-tts-preview` |
+| `GEMINI_TTS_MODEL` | Modelo de voz (TTS) | `gemini-3.1-flash-tts-preview` (padrão do código; o modelo `.env.sample` sugere `gemini-tts-1.0`) |
 
 O script [load_env.py](load_env.py) lê o `.env` antes da compilação e transforma cada linha numa macro C++ (`-DCHAVE="valor"`). Variáveis omitidas usam os padrões de [src/main.cpp](src/main.cpp). Sem `.env`, o Wi-Fi não conecta.
 
@@ -69,7 +69,7 @@ Na extensão do VS Code, use os botões **Build**, **Upload** e **Monitor** da b
 Passo a passo:
 
 1. Clone/abra a pasta do projeto.
-2. Copie `.env.sample` para `.env` e preencha (ver acima).
+2. Copie `contrib/.env.sample` para `.env` e preencha (ver acima).
 3. Ligue a placa por USB-C.
 4. Execute `pio run -t upload`. Na primeira vez, o PlatformIO baixa a plataforma `espressif32` e as bibliotecas (`lvgl`, `SensorLib`, `ArduinoJson`).
 5. Abra o monitor serial para ver os logs.
@@ -84,7 +84,7 @@ Passo a passo:
 ## Estrutura
 
 ```
-.env.sample       Modelo de configuração (copiar para .env)
+contrib/.env.sample  Modelo de configuração (copiar para a raiz como .env)
 platformio.ini     Configuração da board, flags e dependências
 default_16MB.csv   Tabela de partições (2 apps OTA de 6,25 MB + SPIFFS)
 load_env.py        Injeta o .env como macros de compilação
